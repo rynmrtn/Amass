@@ -7,6 +7,7 @@ package config
 import (
 	"testing"
 
+	amassdb "github.com/OWASP/Amass/v3/db"
 	"github.com/go-ini/ini"
 )
 
@@ -26,7 +27,7 @@ func TestLoadDatabaseSettings(t *testing.T) {
 		primary = false ; Specify which graph database is the primary db, or the local database will be selected.
 		url = "postgres://username:password@host:9999/database-name?sslmode=disable"
 		options="connect_timeout=10"
-		
+
 		# MqSQL database and credentials URL format:
 		[graphdbs.mysql]
 		url = username:password@tcp(host:3306)/database-name?timeout=10s
@@ -60,9 +61,9 @@ func TestLoadDatabaseSettings(t *testing.T) {
 
 func TestLocalDatabaseSettings(t *testing.T) {
 	c := NewConfig()
-	db := new(Database)
+	db := new(amassdb.Database)
 	db.Primary = true
-	dbs := []*Database{db}
+	dbs := []*amassdb.Database{db}
 	if loaded := c.LocalDatabaseSettings(dbs); loaded == nil {
 		t.Errorf("LocalDatabaseSettings failed")
 	}

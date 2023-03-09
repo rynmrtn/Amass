@@ -26,7 +26,8 @@ import (
 )
 
 const (
-	dbUsageMsg = "db [options]"
+	dbUsageMsg   = "db [init|drop|upgrade] [options]"
+	dbUpgradeMsg = "Upgrade with `amass db upgrade`"
 )
 
 type dbArgs struct {
@@ -57,7 +58,25 @@ type dbArgs struct {
 func runDBCommand(clArgs []string) {
 	var args dbArgs
 	var help1, help2 bool
+	type SubCommandRunner func(*config.Config)
+
 	dbCommand := flag.NewFlagSet("db", flag.ContinueOnError)
+	var runDBSubCommand SubCommandRunner
+
+	// Get db subcommand from clArgs if present
+	if len(clArgs) > 0 {
+		switch clArgs[0] {
+		case "init":
+			runDBSubCommand = runDBInitSubCommand
+			clArgs = clArgs[1:]
+		case "drop":
+			runDBSubCommand = runDBDropCommand
+			clArgs = clArgs[1:]
+		case "upgrade":
+			runDBSubCommand = runDBUpgradeSubCommand
+			clArgs = clArgs[1:]
+		}
+	}
 
 	dbBuf := new(bytes.Buffer)
 	dbCommand.SetOutput(dbBuf)
@@ -85,7 +104,7 @@ func runDBCommand(clArgs []string) {
 	dbCommand.StringVar(&args.Filepaths.JSONOutput, "json", "", "Path to the JSON output file")
 	dbCommand.StringVar(&args.Filepaths.TermOut, "o", "", "Path to the text file containing terminal stdout/stderr")
 
-	if len(clArgs) < 1 {
+	if len(clArgs) < 1 && runDBSubCommand == nil {
 		commandUsage(dbUsageMsg, dbCommand, dbBuf)
 		return
 	}
@@ -125,6 +144,12 @@ func runDBCommand(clArgs []string) {
 	} else if args.Filepaths.ConfigFile != "" {
 		r.Fprintf(color.Error, "Failed to load the configuration file: %v\n", err)
 		os.Exit(1)
+	}
+
+	// Run db subcommand if present
+	if runDBSubCommand != nil {
+		runDBSubCommand(cfg)
+		return
 	}
 
 	srcs := datasrcs.GetAllSources(&systems.LocalSystem{Cfg: cfg})

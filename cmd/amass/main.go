@@ -37,6 +37,7 @@ import (
 
 	"github.com/OWASP/Amass/v3/config"
 	"github.com/OWASP/Amass/v3/datasrcs"
+	amassdb "github.com/OWASP/Amass/v3/db"
 	"github.com/OWASP/Amass/v3/format"
 	amassnet "github.com/OWASP/Amass/v3/net"
 	"github.com/OWASP/Amass/v3/requests"
@@ -277,6 +278,21 @@ func memGraphForScope(ctx context.Context, domains []string, from *netmap.Graph)
 		return nil, fmt.Errorf("failed to move the data into the in-memory graph database: %v", err)
 	}
 	return db, nil
+}
+
+func openSQLDatabase(cfg *config.Config) (*amassdb.Database, error) {
+	for _, db := range cfg.SQLDBs {
+		if !db.Primary {
+			continue
+		}
+		return db, nil
+	}
+
+	if db := cfg.LocalSQLDatabaseSettings(cfg.SQLDBs); db != nil {
+		return db, nil
+	}
+
+	return nil, fmt.Errorf("Error loading SQL database config.")
 }
 
 func orderedEvents(ctx context.Context, events []string, db *netmap.Graph) ([]string, []time.Time, []time.Time) {

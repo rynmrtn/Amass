@@ -23,6 +23,7 @@ import (
 	"sync"
 	"time"
 
+	amassdb "github.com/OWASP/Amass/v3/db"
 	"github.com/OWASP/Amass/v3/resources"
 	"github.com/caffix/stringset"
 	"github.com/go-ini/ini"
@@ -61,7 +62,10 @@ type Config struct {
 	ScriptsDirectory string `ini:"scripts_directory"`
 
 	// The graph databases used by the system / enumerations
-	GraphDBs []*Database
+	GraphDBs []*amassdb.Database
+
+	// The SQL databases used by the system / enumerations
+	SQLDBs []*amassdb.Database
 
 	// The maximum number of concurrent DNS queries
 	MaxDNSQueries int `ini:"maximum_dns_queries"`
@@ -252,6 +256,7 @@ func (c *Config) LoadSettings(path string) error {
 		c.loadAlterationSettings,
 		c.loadBruteForceSettings,
 		c.loadDatabaseSettings,
+		c.loadSQLDatabaseSettings,
 		c.loadDataSourceSettings,
 	}
 	for _, load := range loads {

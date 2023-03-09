@@ -214,7 +214,7 @@ func (l *LocalSystem) setupOutputDirectory() error {
 func (l *LocalSystem) setupGraphDBs() error {
 	cfg := l.Config()
 
-	var dbs []*config.Database
+	var dbs []*amassdb.Database
 	if db := cfg.LocalDatabaseSettings(cfg.GraphDBs); db != nil {
 		dbs = append(dbs, db)
 	}
