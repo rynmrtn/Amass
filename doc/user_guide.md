@@ -52,6 +52,9 @@ The amass tool has several subcommands shown below for handling your Internet ex
 | viz | Generate visualizations of enumerations for exploratory analysis |
 | track | Compare results of enumerations against common target organizations |
 | db | Manage the graph databases storing the enumeration results |
+| db init | Create a relational database if one does not exist |
+| db drop | Delete the relational database if one exists - EXISTING DATA WILL BE LOST |
+| db upgrade | Ensure the existing relational database schema matches the Amass version in use |
 
 All subcommands have some default global arguments that can be seen below.
 
@@ -202,6 +205,18 @@ Performs viewing and manipulation of the graph database. This subcommand only le
 | -show | Print the results for the enumeration index + domains provided | amass db -show |
 | -src | Print data sources for the discovered names | amass db -show -src -d example.com |
 | -summary | Print just ASN table summary | amass db -summary -d example.com |
+
+### The 'db init' Subcommand
+
+Create a relational database if one does not exist, based on the Amass version in use. 'db init' has no custom flags. Example: amass db init
+
+### The 'db drop' Subcommand
+
+Delete any existing relational database. ALL EXISTING DATA WILL BE LOST. If it runs successfully there will be no output. 'db drop' has no flags. Example: amass db drop
+
+### The 'db upgrade' Subcommand
+
+Ensure the existing relational database schema matches the Amass version in use. 'db upgrade' has no custom flags. Example: amass db upgrade
 
 ## The Output Directory
 
