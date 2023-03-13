@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/OWASP/Amass/v3/config"
+	amassdb "github.com/OWASP/Amass/v3/db"
 	amassnet "github.com/OWASP/Amass/v3/net"
 	"github.com/OWASP/Amass/v3/requests"
 	"github.com/OWASP/Amass/v3/resources"
